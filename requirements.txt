@@ -1,0 +1,8 @@
+fastapi==0.99.1
+pydantic==1.10.11
+uvicorn==0.22.0
+uvloop==0.17.0
+watchfiles==0.19.0
+websockets==11.0.3
+SQLAlchemy==2.0.18
+psycopg2-binary==2.9.6
