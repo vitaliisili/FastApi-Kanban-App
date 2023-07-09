@@ -11,4 +11,4 @@ class Role(Base):
     name = Column(String, nullable=False, unique=True)
     description = Column(String, nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
-    users = relationship('Users', secondary='user_role', back_populates='roles')
+    users = relationship('User', secondary='user_role', back_populates='roles')
