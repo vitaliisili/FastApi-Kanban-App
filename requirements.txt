@@ -8,3 +8,4 @@ websockets==11.0.3
 SQLAlchemy==2.0.18
 psycopg2-binary==2.9.6
 alembic==1.11.1
+passlib==1.7.4
