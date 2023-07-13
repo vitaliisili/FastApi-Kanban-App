@@ -1,5 +1,4 @@
-from sqlalchemy import Column, String, text, Integer
-from sqlalchemy.dialects.postgresql import TIMESTAMP
+from sqlalchemy import Column, String, Integer, func, DateTime
 from sqlalchemy.orm import relationship
 from api.db.base_class import Base
 
@@ -12,6 +11,6 @@ class User(Base):
     password = Column(String, nullable=False)
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
-    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
-    updated_at = Column(TIMESTAMP(timezone=True), nullable=False, onupdate=text('now()'), server_default=text('now()'))
+    created_at = Column(DateTime, nullable=False, server_default=func.now())
+    updated_at = Column(DateTime, nullable=False, onupdate=func.now(), server_default=func.now())
     roles = relationship('Role', secondary='user_role', back_populates='users')
