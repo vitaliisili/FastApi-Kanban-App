@@ -1,5 +1,4 @@
-from sqlalchemy import Column, String, text, Integer
-from sqlalchemy.dialects.postgresql import TIMESTAMP
+from sqlalchemy import Column, String, text, Integer, func, DateTime
 from sqlalchemy.orm import relationship
 from api.db.base_class import Base
 
@@ -9,6 +8,5 @@ class Role(Base):
 
     id = Column(Integer, primary_key=True, nullable=False, index=True)
     name = Column(String, nullable=False, unique=True)
-    description = Column(String, nullable=False)
-    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
+    created_at = Column(DateTime, nullable=False, server_default=func.now())
     users = relationship('User', secondary='user_role', back_populates='roles')

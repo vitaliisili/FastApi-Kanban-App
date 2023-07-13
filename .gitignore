@@ -140,3 +140,6 @@ pgadmin_data
 
 # Other
 .DS Store
+
+# Test database
+*/test.db
