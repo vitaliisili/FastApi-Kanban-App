@@ -35,3 +35,15 @@ class HashPassword:
             bool: Returns True if the encrypted password equals to the plain text one once decrypted.
         """
         return self.__crypt_context.verify(password, hashed_password)
+
+    def validate_password(self, plain_password: str) -> bool:
+        """ A method that validates the strength of a plain password according to predefined criteria.
+
+        Args:
+            plain_password (str): The plain password to be validated.
+
+        Returns:
+            bool: Returns True if the password meets the defined criteria, otherwise False
+
+        """
+        return True  # TODO: Add validation for password
