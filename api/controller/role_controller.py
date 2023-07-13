@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.orm import Session
 from api.db.database_config import get_db
@@ -28,3 +29,8 @@ def get_role_by_name(name: str, db: Session = Depends(get_db)) -> Role:
 
     except EntityNotFoundException as err:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(err))
+
+
+@router.get("/api/roles", status_code=status.HTTP_200_OK, response_model=List[Role])
+def get_all_roles(db: Session = Depends(get_db)):
+    return role_service.get_all(db)
