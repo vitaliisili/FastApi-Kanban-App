@@ -27,12 +27,4 @@ def save_user(user_create: UserCreate, db: Session = Depends(get_db)):
 
 @router.get('/api/users', status_code=status.HTTP_200_OK, response_model=List[User])
 def get_all(db: Session = Depends(get_db)):
-    """
-    This is documentation for openapi
-    Args:
-        db (Session): connection
-
-    Returns:
-        all users
-    """
     return user_service.get_all(db)
