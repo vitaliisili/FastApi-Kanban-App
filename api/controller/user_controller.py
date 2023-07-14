@@ -15,9 +15,6 @@ def save_user(user_create: UserCreate, db: Session = Depends(get_db)):
     try:
         return user_service.save(user_create, db)
 
-    except EntityNotFoundException as err:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(err))
-
     except BadRequestException as err:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(err))
 
