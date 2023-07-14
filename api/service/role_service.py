@@ -13,7 +13,7 @@ class RoleService:
 
     def save(self, role_create: RoleCreate, db: Session):
         if role_create.name.strip() == "":
-            raise BadRequestException("Role name must not by blank")
+            raise BadRequestException("Role name must not be blank")
 
         check_role = self.role_repository.get_role_by_name(role_create.name, db)
         if check_role is not None:
