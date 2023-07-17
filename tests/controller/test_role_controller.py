@@ -11,9 +11,9 @@ def test_save_role_success(client):
 
 
 @pytest.mark.parametrize("name, status_code, error_message", [
-    ("", 400, "Role name must not by blank"),
-    (" ", 400, "Role name must not by blank"),
-    ("   ", 400, "Role name must not by blank")
+    ("", 400, "Role name must not be blank"),
+    (" ", 400, "Role name must not be blank"),
+    ("   ", 400, "Role name must not be blank")
 ])
 def test_save_role_empty_name_error(client, name, status_code, error_message):
     role_test = {"name": name}
