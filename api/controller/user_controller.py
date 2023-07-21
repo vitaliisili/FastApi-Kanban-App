@@ -25,3 +25,11 @@ def save_user(user_create: UserCreate, db: Session = Depends(get_db)):
 @router.get('/api/users', status_code=status.HTTP_200_OK, response_model=List[User])
 def get_all(db: Session = Depends(get_db)):
     return user_service.get_all(db)
+
+
+@router.get('/api/users/{id}', status_code=status.HTTP_200_OK, response_model=User)
+def get_user_by_id(id: int, db: Session = Depends(get_db)):
+    try:
+        return user_service.get_user_by_id(id, db)
+    except EntityNotFoundException as err:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(err))

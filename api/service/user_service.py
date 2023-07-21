@@ -37,3 +37,9 @@ class UserService:
     def get_all(self, db: Session) -> List[Type[User]]:
         users: List[Type[User]] = self.user_repository.get_all(db)
         return users
+
+    def get_user_by_id(self, id, db):
+        user = self.user_repository.get_user_by_id(id, db)
+        if user is None:
+            raise EntityNotFoundException(f"User with id: {id} not found")
+        return user
