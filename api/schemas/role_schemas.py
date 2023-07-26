@@ -1,4 +1,6 @@
 from datetime import datetime
+from typing import Optional
+
 from pydantic import BaseModel, validator, Field
 
 
@@ -12,7 +14,7 @@ class RoleCreate(RoleBase):
 
 class Role(RoleBase):
     id: int
-    created_at: datetime
+    created_at: Optional[datetime]
 
     class Config:
         orm_mode = True

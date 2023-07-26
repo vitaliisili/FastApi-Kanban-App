@@ -8,5 +8,5 @@ class Role(Base):
 
     id = Column(Integer, primary_key=True, nullable=False, index=True)
     name = Column(String, nullable=False, unique=True)
-    created_at = Column(DateTime, nullable=False, server_default=func.now())
-    users = relationship('User', secondary='user_role', back_populates='roles')
+    created_at = Column(DateTime, server_default=func.now())
+    users = relationship('User', secondary='user_role', back_populates='roles', passive_deletes=True)
