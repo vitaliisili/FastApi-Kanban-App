@@ -1,7 +1,7 @@
 from typing import List, Type
-
 from sqlalchemy.orm import Session
 from api.models.role_model import Role
+from api.schemas.role_schemas import RoleUpdate
 
 
 class RoleRepository:
@@ -19,3 +19,13 @@ class RoleRepository:
     def get_all(self, db: Session) -> List[Type[Role]]:
         roles = db.query(Role).all()
         return roles
+
+    def get_by_id(self, id: int, db: Session) -> Role:
+        role = db.query(Role).filter(Role.id == id).first()
+        return role
+
+    def update_role(self, role: RoleUpdate, db: Session):
+        role_query = db.query(Role).filter(Role.id == role.id)
+        role_query.update(role.dict(), synchronize_session=False)
+        db.commit()
+        return role_query.first()

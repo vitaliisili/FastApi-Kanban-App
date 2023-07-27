@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 from pydantic import BaseModel
-from api.schemas.role_schemas import Role
+from api.schemas.role_schemas import RoleOut, RoleUpdate
 
 
 class UserBase(BaseModel):
@@ -16,14 +16,14 @@ class UserCreate(UserBase):
 
 class UserUpdate(UserBase):
     id: int
-    roles: List[Role]
+    roles: List[RoleUpdate]
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
 
 
 class UserOut(UserBase):
     id: int
-    roles: List[Role]
+    roles: List[RoleOut]
     created_at: datetime
     updated_at: datetime
 
