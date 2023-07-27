@@ -20,7 +20,7 @@ class ReadWriteRepository(Generic[T]):
     def __init__(self, entity: T):
         self.entity = entity
 
-    def save(self, entity: T, db: Session):
+    def save(self, entity: T, db: Session) -> T:
         """ Saves the provided entity to the database.
 
         This method adds the given entity to the current session and commits the transaction to persist it
@@ -52,7 +52,7 @@ class ReadWriteRepository(Generic[T]):
         entities: List[T] = db.query(self.entity).all()
         return entities
 
-    def get_by_id(self, id: int, db: Session):
+    def get_by_id(self, id: int, db: Session) -> T:
         """ Retrieves a single entity by its unique identifier from the database.
 
         This method performs a database query to fetch a single entity of the specified type ('T') from the database
@@ -68,7 +68,7 @@ class ReadWriteRepository(Generic[T]):
         entity: T = db.query(self.entity).filter_by(id=id).first()
         return entity
 
-    def update(self, entity_schema_update, db: Session):
+    def update(self, entity_schema_update, db: Session) -> T:
         """ Updates an existing entity in the database with the provided data.
 
         This method finds an existing entity in the database based on the 'id' attribute of the 'entity_schema_update'
@@ -88,7 +88,7 @@ class ReadWriteRepository(Generic[T]):
         db.commit()
         return entity_query.first()
 
-    def delete(self, id: int, db: Session):
+    def delete(self, id: int, db: Session) -> None:
         """ Deletes an entity from the database by its unique identifier (id).
 
         This method performs a database query to find the entity with the specified 'id'
