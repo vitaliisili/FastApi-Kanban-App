@@ -40,7 +40,13 @@ def client(session):
 def test_roles(client, session):
     role_user = {"name": "USER"}
     role_admin = {"name": "ADMIN"}
-    session.add_all([Role(**role_user), Role(**role_admin)])
+    role_moderator = {"name": "MODERATOR"}
+    session.add_all(
+        [
+            Role(**role_user),
+            Role(**role_admin),
+            Role(**role_moderator)
+        ])
     session.commit()
     return session.query(Role).all()
 
@@ -60,13 +66,14 @@ def test_users(client, session, test_roles):
     session.add_all([User(**user_user), User(**user_admin)])
     session.commit()
 
-    user = session.query(User).filter(User.id == 1).first()
-    user.roles.append(session.query(Role).filter(Role.name == 'USER').first())
+    user = session.query(User).filter_by(id=1).first()
+    user.roles.append(session.query(Role).filter_by(name=test_roles[0].name).first())
     session.commit()
 
-    admin = session.query(User).filter(User.id == 2).first()
-    admin.roles.append(session.query(Role).filter(Role.name == "USER").first())
-    admin.roles.append(session.query(Role).filter(Role.name == "ADMIN").first())
+    admin = session.query(User).filter_by(id=2).first()
+    admin.roles.append(session.query(Role).filter_by(name=test_roles[0].name).first())
+    admin.roles.append(session.query(Role).filter_by(name=test_roles[1].name).first())
+    admin.roles.append(session.query(Role).filter_by(name=test_roles[2].name).first())
     session.commit()
 
     return session.query(User).all()

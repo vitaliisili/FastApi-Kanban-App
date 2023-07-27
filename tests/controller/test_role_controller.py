@@ -1,13 +1,13 @@
 import pytest
-from api.schemas import role_schemas
+from api.schemas.role_schemas import RoleOut
 
 
 def test_save_role_success(client):
-    role_test = {"name": "TEST"}
-    response = client.post("/api/roles", json=role_test)
-    new_role = role_schemas.Role(**response.json())
+    role = {"name": "TEST"}
+    response = client.post("/api/roles", json=role)
+    new_role = RoleOut(**response.json())
     assert response.status_code == 201
-    assert new_role.name == role_test.get('name')
+    assert new_role.name == role.get('name')
 
 
 @pytest.mark.parametrize("name, status_code, error_message", [
@@ -16,8 +16,8 @@ def test_save_role_success(client):
     ("   ", 400, "Role name must not be blank")
 ])
 def test_save_role_empty_name_error(client, name, status_code, error_message):
-    role_test = {"name": name}
-    response = client.post("/api/roles", json=role_test)
+    role = {"name": name}
+    response = client.post("/api/roles", json=role)
     error = response.json().get("detail")
     assert response.status_code == status_code
     assert error == error_message
@@ -26,6 +26,7 @@ def test_save_role_empty_name_error(client, name, status_code, error_message):
 @pytest.mark.parametrize("name, status_code", [
     ("USER", 409),
     ("ADMIN", 409),
+    ("MODERATOR", 409),
 ])
 def test_save_role_with_existing_name_error(client, test_roles, name, status_code):
     existing_role = {"name": name}
@@ -37,6 +38,63 @@ def test_save_role_with_existing_name_error(client, test_roles, name, status_cod
 
 def test_get_all_roles(client, test_roles):
     response = client.get("/api/roles")
-    roles = list(map(lambda role: role_schemas.Role(**role), response.json()))
+    roles = [RoleOut(**role) for role in response.json()]
     assert response.status_code == 200
     assert len(roles) == len(test_roles)
+
+
+def test_update_role_success(client, test_roles):
+    role = {
+        "id": test_roles[2].id,
+        "name": "MANAGER"
+    }
+    response = client.put("/api/roles", json=role)
+    updated_role = RoleOut(**response.json())
+    assert response.status_code == 200
+    assert updated_role.name == test_roles[2].name
+
+
+def test_update_role_not_found(client):
+    role = {
+        "id": 9999,
+        "name": "MANAGER"
+    }
+    response = client.put("/api/roles", json=role)
+    assert response.status_code == 404
+
+
+def test_update_role_not_found_error_message(client):
+    role = {
+        "id": 9999,
+        "name": "MANAGER"
+    }
+    response = client.put("/api/roles", json=role)
+    error = response.json().get("detail")
+    assert error == "Role with id: 9999 not found"
+
+
+@pytest.mark.parametrize("name", [
+    "USER",
+    "ADMIN"
+])
+def test_update_role_already_exist(client, test_roles, name):
+    role = {
+        "id": test_roles[2].id,
+        "name": name
+    }
+    response = client.put("/api/roles", json=role)
+    assert response.status_code == 409
+
+
+@pytest.mark.parametrize("name", [
+    "USER",
+    "ADMIN"
+])
+def test_update_role_already_exist_error_message(client, test_roles, name):
+    role = {
+        "id": test_roles[2].id,
+        "name": name
+    }
+    response = client.put("/api/roles", json=role)
+    error = response.json().get("detail")
+    assert error == f"Role with name: {name} already exists"
