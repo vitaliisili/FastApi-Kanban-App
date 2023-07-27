@@ -8,7 +8,7 @@ from api.schemas.role_schemas import RoleCreate, RoleUpdate
 
 class RoleService:
     def __init__(self):
-        self.role_repository = RoleRepository()
+        self.role_repository = RoleRepository(Role)
 
     def save(self, role_create: RoleCreate, db: Session):
         if role_create.name.strip() == "":
@@ -30,8 +30,8 @@ class RoleService:
     def get_all(self, db: Session) -> List[Type[Role]]:
         return self.role_repository.get_all(db)
 
-    def update_role(self, role: RoleUpdate, db: Session) -> Role:
-        check_role: Role = self.role_repository.get_by_id(role.id, db)
+    def update_role(self, role: RoleUpdate, db: Session) -> Type[Role]:
+        check_role: Type[Role] = self.role_repository.get_by_id(role.id, db)
 
         if check_role is None:
             raise EntityNotFoundException(f"Role with id: {role.id} not found")
@@ -41,13 +41,13 @@ class RoleService:
             if check_role_name is not None:
                 raise EntityAlreadyExistsException(f"Role with name: {role.name} already exists")
 
-        role: Role = self.role_repository.update_role(role, db)
+        role: Type[Role] = self.role_repository.update(role, db)
         return role
 
     def delete_role(self, id: int, db: Session) -> None:
-        check_role: Role = self.role_repository.get_by_id(id, db)
+        check_role: Type[Role] = self.role_repository.get_by_id(id, db)
 
         if check_role is None:
             raise EntityNotFoundException(f"Role with id: {id} not found")
 
-        self.role_repository.delete_role(id, db)
+        self.role_repository.delete(id, db)
