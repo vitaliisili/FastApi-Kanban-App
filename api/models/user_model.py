@@ -14,3 +14,6 @@ class User(Base):
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now(), server_default=func.now())
     roles = relationship('Role', secondary='user_role', back_populates='users', cascade="all, delete")
+    workspaces = relationship("Workspace", back_populates='owner')
+    workspaces_member = relationship(
+        'Workspace', secondary='workspace_member', back_populates='members', cascade="all, delete")
