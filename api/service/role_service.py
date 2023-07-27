@@ -43,3 +43,11 @@ class RoleService:
 
         role: Role = self.role_repository.update_role(role, db)
         return role
+
+    def delete_role(self, id: int, db: Session) -> None:
+        check_role: Role = self.role_repository.get_by_id(id, db)
+
+        if check_role is None:
+            raise EntityNotFoundException(f"Role with id: {id} not found")
+
+        self.role_repository.delete_role(id, db)

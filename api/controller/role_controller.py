@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, status, HTTPException, Response
 from sqlalchemy.orm import Session
 from api.db.database_config import get_db
 from api.exception.exception import EntityNotFoundException, EntityAlreadyExistsException, BadRequestException
@@ -41,3 +41,12 @@ def update_role(role: RoleUpdate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(err))
     except EntityAlreadyExistsException as err:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(err))
+
+
+@router.delete("/api/roles/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_role(id: int, db: Session = Depends(get_db)):
+    try:
+        role_service.delete_role(id, db)
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+    except EntityNotFoundException as err:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(err))

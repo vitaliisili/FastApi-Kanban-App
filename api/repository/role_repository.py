@@ -1,5 +1,5 @@
 from typing import List, Type
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, Query
 from api.models.role_model import Role
 from api.schemas.role_schemas import RoleUpdate
 
@@ -29,3 +29,8 @@ class RoleRepository:
         role_query.update(role.dict(), synchronize_session=False)
         db.commit()
         return role_query.first()
+
+    def delete_role(self, id: int, db: Session) -> None:
+        role_query: Query = db.query(Role).filter(Role.id == id)
+        role_query.delete(synchronize_session=False)
+        db.commit()
