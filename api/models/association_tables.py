@@ -8,3 +8,10 @@ user_role = Table(
     Column('role_id', Integer, ForeignKey('roles.id', ondelete="CASCADE"))
 )
 
+workspace_member = Table(
+    'workspace_member',
+    Base.metadata,
+    Column('user_id', Integer, ForeignKey('users.id', ondelete="CASCADE")),
+    Column('workspace_id', Integer, ForeignKey('workspace.id', ondelete="CASCADE"))
+)
+
