@@ -54,12 +54,12 @@ def test_roles(client, session):
 @pytest.fixture
 def test_users(client, session, test_roles):
     user_user = {"email": "user@email.com",
-                 "password": "userpassword1A#",
+                 "password": "password1A#",
                  "first_name": "user_first",
                  "last_name": "user_last"}
 
     user_admin = {"email": "admin@email.com",
-                  "password": "adminpassword1A#",
+                  "password": "password1A#",
                   "first_name": "admin_first",
                   "last_name": "admin_last"}
 

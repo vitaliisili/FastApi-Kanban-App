@@ -13,7 +13,7 @@ class RoleRepository:
         return role_model
 
     def get_role_by_name(self, name: str, db: Session) -> Role:
-        role = db.query(Role).filter(Role.name == name).first()
+        role = db.query(Role).filter_by(name=name).first()
         return role
 
     def get_all(self, db: Session) -> List[Type[Role]]:
@@ -21,16 +21,16 @@ class RoleRepository:
         return roles
 
     def get_by_id(self, id: int, db: Session) -> Role:
-        role = db.query(Role).filter(Role.id == id).first()
+        role = db.query(Role).filter_by(id=id).first()
         return role
 
     def update_role(self, role: RoleUpdate, db: Session):
-        role_query = db.query(Role).filter(Role.id == role.id)
+        role_query = db.query(Role).filter_by(id=role.id)
         role_query.update(role.dict(), synchronize_session=False)
         db.commit()
         return role_query.first()
 
     def delete_role(self, id: int, db: Session) -> None:
-        role_query: Query = db.query(Role).filter(Role.id == id)
+        role_query: Query = db.query(Role).filter_by(id=id)
         role_query.delete(synchronize_session=False)
         db.commit()
