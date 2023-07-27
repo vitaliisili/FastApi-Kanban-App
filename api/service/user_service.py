@@ -65,5 +65,3 @@ class UserService:
         if check_user_id is None:
             raise EntityNotFoundException(f"User with id: {id} not found")
         self.user_repository.delete_user(id, db)
-
-

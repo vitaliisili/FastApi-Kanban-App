@@ -6,7 +6,6 @@ from api.schemas.user_schemas import UserUpdate
 
 
 class UserRepository:
-
     def save(self, model: User, db: Session) -> User:
         db.add(model)
         db.commit()
@@ -14,7 +13,7 @@ class UserRepository:
         return model
 
     def get_user_by_email(self, email: str, db: Session) -> User:
-        user: User = db.query(User).filter(User.email == email).first()
+        user: User = db.query(User).filter_by(email=email).first()
         return user
 
     def get_all(self, db: Session) -> List[Type[User]]:
@@ -22,11 +21,11 @@ class UserRepository:
         return users
 
     def get_user_by_id(self, id, db):
-        user: User = db.query(User).filter(User.id == id).first()
+        user: User = db.query(User).filter_by(id=id).first()
         return user
 
     def update_user(self, user_update: UserUpdate, db: Session):
-        user = db.query(User).filter(User.id == user_update.id).first()
+        user = db.query(User).filter_by(id=user_update.id).first()
 
         for field, value in user_update.dict(exclude={"roles"}).items():
             if value is not None:
@@ -40,6 +39,6 @@ class UserRepository:
         return user
 
     def delete_user(self, id: int, db: Session):
-        user_query = db.query(User).filter(User.id == id)
+        user_query = db.query(User).filter_by(id=id)
         user_query.delete(synchronize_session=False)
         db.commit()
