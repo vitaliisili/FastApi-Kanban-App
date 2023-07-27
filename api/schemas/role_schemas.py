@@ -13,6 +13,7 @@ class RoleCreate(RoleBase):
 
 class RoleUpdate(RoleBase):
     id: int
+    created_at: Optional[datetime]
 
 
 class RoleOut(RoleBase):
