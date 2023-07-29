@@ -62,15 +62,21 @@ DB_PASSWORD=<secret_password>
 DB_HOSTNAME=<database_host>
 DB_PORT=<database_port>
 DB_NAME=<database_name>
+TOKEN_SECRET_KEY=<token_secret_key>
+TOKEN_ALGORITHM=<token_algorithm>
+TOKEN_EXPIRE_MINUTES=<expire_time_in_minute>
 ```
 
-Example of `.env` file:
+Example `.env` file:
 ```env
 DB_USERNAME=postgres
 DB_PASSWORD=root
 DB_HOSTNAME=localhost
 DB_PORT=5432
 DB_NAME=kanban_db
+TOKEN_SECRET_KEY=dsjghj435ghfghjbmn687gdfhjkhgjkhdfg897456jkhgsdgkh567897dfgh
+TOKEN_ALGORITHM=HS256
+TOKEN_EXPIRE_MINUTES=60
 ```
 
 &nbsp;
