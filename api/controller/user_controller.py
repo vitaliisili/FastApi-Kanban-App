@@ -12,18 +12,6 @@ router = APIRouter(tags=['Users'])
 user_service = UserService()
 
 
-@router.post('/api/users', status_code=status.HTTP_201_CREATED, response_model=UserOut)
-def save_user(user_create: UserCreate, db: Session = Depends(get_db)):
-    try:
-        return user_service.save(user_create, db)
-
-    except BadRequestException as err:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(err))
-
-    except EntityAlreadyExistsException as err:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(err))
-
-
 @router.get('/api/users', status_code=status.HTTP_200_OK, response_model=List[UserOut])
 def get_all(db: Session = Depends(get_db), principal: User = Depends(get_principal)):
     return user_service.get_all(db)
