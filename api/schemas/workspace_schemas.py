@@ -8,7 +8,7 @@ class WorkspaceBase(BaseModel):
     title: str = Field(..., description="Workspace name")
 
     @validator("title")
-    def validate_title(cls, title):
+    def validate_title(cls, title):  # noqa
         if not title.strip():
             raise ValueError("Title cannot be empty or blank")
         return title
