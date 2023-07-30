@@ -22,7 +22,7 @@ jobs:
       DB_NAME: test
       TOKEN_SECRET_KEY: ${{secrets.TOKEN_SECRET_KEY}}
       TOKEN_ALGORITHM: ${{secrets.TOKEN_ALGORITHM}}
-      TOKEN_EXPIRE_MINUTES: ${{secrets.TOKEN_EXPIRE_MINUTES}}
+      TOKEN_EXPIRE_MINUTES: 10
 
     services:
       postgres:
