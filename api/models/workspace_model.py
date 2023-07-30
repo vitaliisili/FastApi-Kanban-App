@@ -7,7 +7,7 @@ class Workspace(Base):
     __tablename__ = "workspace"
 
     id = Column(Integer, primary_key=True, nullable=False, index=True)
-    title = Column(String, nullable=False, unique=True)
+    title = Column(String, nullable=False)
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now(), server_default=func.now())
     owner_id = Column(Integer, ForeignKey("users.id"))
