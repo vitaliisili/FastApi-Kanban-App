@@ -20,6 +20,9 @@ jobs:
       DB_HOSTNAME: localhost
       DB_PORT: 5432
       DB_NAME: test
+      TOKEN_SECRET_KEY: {{ secrets.TOKEN_SECRET_KEY }}
+      TOKEN_ALGORITHM: {{ secrets.TOKEN_ALGORITHM }}
+      TOKEN_EXPIRE_MINUTES: {{ secrets.TOKEN_EXPIRE_MINUTES }}
 
     services:
       postgres:
@@ -43,11 +46,11 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: "3.10"
-    - name: Create .env file
-      run: |
-        echo "TOKEN_SECRET_KEY=${{ secrets.TOKEN_SECRET_KEY }}" >> .env
-        echo "TOKEN_ALGORITHM=${{ secrets.TOKEN_ALGORITHM }}" >> .env
-        echo "TOKEN_EXPIRE_MINUTES=10" >> .env
+#    - name: Create .env file
+#      run: |
+#        echo "TOKEN_SECRET_KEY=${{ secrets.TOKEN_SECRET_KEY }}" >> .env
+#        echo "TOKEN_ALGORITHM=${{ secrets.TOKEN_ALGORITHM }}" >> .env
+#        echo "TOKEN_EXPIRE_MINUTES=10" >> .env
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
