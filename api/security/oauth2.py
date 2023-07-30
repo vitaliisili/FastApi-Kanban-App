@@ -14,7 +14,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
 
 SECRET_KEY: str = env.token_secret_key
 ALGORITHM: str = env.token_algorithm
-ACCESS_TOKEN_EXPIRE_MINUTES: int = env.token_expire_minutes
+ACCESS_TOKEN_EXPIRE_MINUTES: int = int(env.token_expire_minutes)
 
 user_service = UserService()
 hash_password = HashPassword()
