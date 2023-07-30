@@ -8,6 +8,7 @@ from api.main import app
 from api.db.database_config import get_db
 from api.models.role_model import Role
 from api.models.user_model import User
+from api.models.workspace_model import Workspace
 from api.security.token_schemas import Token
 from api.security.oauth2 import create_access_token
 from api.security.password import HashPassword
@@ -112,3 +113,15 @@ def authorized_user_client(client: TestClient, test_users: List[User]) -> TestCl
         "Authorization": f"Bearer {token.access_token}"
     }
     return client
+
+
+@pytest.fixture
+def test_admin_workspaces(session, test_users):
+    admin_workspaces = [
+        Workspace(title="First Admin workspace", owner_id=test_users[1].id, members=test_users),
+        Workspace(title="Second Admin workspace", owner_id=test_users[1].id, members=test_users)
+    ]
+
+    session.add_all(admin_workspaces)
+    session.commit()
+    return session.query(Workspace).filter_by(owner_id=test_users[1].id)
