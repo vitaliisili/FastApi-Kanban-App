@@ -1,4 +1,4 @@
-# Kanban API
+# FastApi Kanban App
 * * *
 
 ### How to run:
