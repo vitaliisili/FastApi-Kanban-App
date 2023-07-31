@@ -116,12 +116,26 @@ def authorized_user_client(client: TestClient, test_users: List[User]) -> TestCl
 
 
 @pytest.fixture
-def test_admin_workspaces(session, test_users):
-    admin_workspaces = [
-        Workspace(title="First Admin workspace", owner_id=test_users[1].id, members=test_users),
-        Workspace(title="Second Admin workspace", owner_id=test_users[1].id, members=test_users)
+def test_workspaces(session, test_users) -> List[Type[Workspace]]:
+    workspaces = [
+        Workspace(title="Java Project Workspace", owner_id=test_users[1].id, members=test_users),
+        Workspace(title="Python Project Workspace", owner_id=test_users[1].id, members=[test_users[1]]),
+        Workspace(title="Ruby Project Workspace", owner_id=test_users[0].id, members=[test_users[0]]),
     ]
 
-    session.add_all(admin_workspaces)
+    session.add_all(workspaces)
     session.commit()
-    return session.query(Workspace).filter_by(owner_id=test_users[1].id)
+    return session.query(Workspace).all()
+
+
+@pytest.fixture
+def test_admin_workspaces(test_workspaces) -> List[Type[Workspace]]:
+    admin_workspaces: List[Type[Workspace]] = [workspace for workspace in test_workspaces if workspace.owner_id == 2]
+    print(len(test_workspaces))
+    return admin_workspaces
+
+
+@pytest.fixture
+def test_user_workspaces(test_workspaces) -> List[Type[Workspace]]:
+    user_workspaces: List[Type[Workspace]] = [workspace for workspace in test_workspaces if workspace.owner_id == 1]
+    return user_workspaces
