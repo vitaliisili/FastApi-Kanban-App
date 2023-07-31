@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Type
 from sqlalchemy.orm import Session
 from api.exception.exception import EntityAlreadyExistsException
 from api.models.user_model import User
@@ -24,3 +24,7 @@ class WorkspaceService:
         default_member = self.user_service.get_user_by_id(principal.id, db)
         new_workspace.members.append(default_member)
         return self.workspace_repository.save(new_workspace, db)
+
+    def get_all_workspaces(self, db: Session) -> list[Type[Workspace]]:
+        workspaces: List[Type[Workspace]] = self.workspace_repository.get_all(db)
+        return workspaces

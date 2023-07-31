@@ -1,3 +1,4 @@
+from typing import List, Annotated
 from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.orm import Session
 from api.db.database_config import get_db
@@ -23,3 +24,12 @@ def save_workspace(workspace_create: WorkspaceCreate,
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(err))
     except EntityNotFoundException as err:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(err))
+
+
+@router.get("/api/workspaces",
+            status_code=status.HTTP_200_OK,
+            response_model=List[WorkspaceOut],
+            dependencies=[Depends(get_principal)])
+def get_all_workspaces(db: Annotated[Session, Depends(get_db)]):
+    workspaces = workspace_service.get_all_workspaces(db)
+    return workspaces
