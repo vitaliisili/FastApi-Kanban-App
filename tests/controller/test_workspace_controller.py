@@ -47,3 +47,26 @@ def test_save_workspace_empty_title(authorized_admin_client, title):
     error = response.json().get("detail")
     assert response.status_code == 422
     assert error == "Title cannot be empty or blank"
+
+
+def test_get_all_workspaces_success(authorized_admin_client, test_workspaces):
+    response = authorized_admin_client.get("/api/workspaces")
+    assert response.status_code == 200
+
+
+def test_get_all_workspace_success_data(authorized_admin_client, test_workspaces):
+    response = authorized_admin_client.get("/api/workspaces")
+    workspaces = response.json()
+    assert len(workspaces) == len(test_workspaces)
+    assert workspaces[0].get("title") == test_workspaces[0].title
+
+
+def test_get_all_unidentified_user(client, test_workspaces):
+    response = client.get("/api/workspaces")
+    assert response.status_code == 401
+
+
+def test_get_all_unidentified_user_error_message(client, test_workspaces):
+    response = client.get("/api/workspaces")
+    error = response.json().get("detail")
+    assert error == "Not authenticated"

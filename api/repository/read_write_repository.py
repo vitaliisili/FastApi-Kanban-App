@@ -1,5 +1,4 @@
 from typing import TypeVar, Generic, List
-
 from sqlalchemy.orm import Session, Query
 
 T = TypeVar('T')
