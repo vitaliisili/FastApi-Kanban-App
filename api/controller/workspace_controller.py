@@ -33,3 +33,15 @@ def save_workspace(workspace_create: WorkspaceCreate,
 def get_all_workspaces(db: Annotated[Session, Depends(get_db)]):
     workspaces = workspace_service.get_all_workspaces(db)
     return workspaces
+
+
+@router.get("/api/workspaces/{owner_id}",
+            status_code=status.HTTP_200_OK,
+            response_model=List[WorkspaceOut],
+            dependencies=[Depends(get_principal)])
+def get_all_workspaces_by_owner_id(owner_id: int, db: Session = Depends(get_db)):
+    try:
+        workspaces: List[Workspace] = workspace_service.get_all_workspaces_by_owner_id(owner_id, db)
+        return workspaces
+    except EntityNotFoundException as err:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(err))
