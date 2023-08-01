@@ -32,6 +32,11 @@ class WorkspaceService:
         owner_check: Type[User] = self.user_service.get_user_by_id(owner_id, db)
         if not owner_check:
             raise EntityNotFoundException(f"User with owner_id: {owner_id} not found")
-
         workspaces: List[Workspace] = self.workspace_repository.get_all_by_owner_id(owner_id, db)
         return workspaces
+
+    def get_workspace_by_id(self, id: int, db: Session) -> Type[Workspace]:
+        workspace: Type[Workspace] = self.workspace_repository.get_by_id(id, db)
+        if not workspace:
+            raise EntityNotFoundException(f"Workspace with id: {id} not found")
+        return workspace
