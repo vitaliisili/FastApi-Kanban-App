@@ -9,13 +9,13 @@ def test_save_workspace_success(authorized_admin_client):
     assert response.status_code == 201
 
 
-def test_save_workspace_success_data(authorized_admin_client, test_users):
+def test_save_workspace_success_data(authorized_admin_client, test_admin_user):
     data = {"title": "New Test workspace"}
     response = authorized_admin_client.post("/api/workspaces", json=data)
     workspace = WorkspaceOut(**response.json())
     assert workspace.title == data.get("title")
-    assert workspace.owner_id == test_users[1].id
-    assert workspace.members[0].email == test_users[1].email
+    assert workspace.owner_id == test_admin_user.id
+    assert workspace.members[0].email == test_admin_user.email
 
 
 def test_save_workspace_unidentified_user(client):
@@ -73,18 +73,18 @@ def test_get_all_unidentified_user_error_message(client, test_workspaces):
     assert error == "Not authenticated"
 
 
-def test_get_all_workspaces_by_owner_id_success(authorized_admin_client, test_workspaces, test_users):
-    response = authorized_admin_client.get(f"/api/workspaces/{test_users[0].id}")
+def test_get_all_workspaces_by_owner_id_success(authorized_admin_client, test_workspaces, test_admin_user):
+    response = authorized_admin_client.get(f"/api/workspaces/{test_admin_user.id}")
     assert response.status_code == 200
 
 
 def test_get_all_workspaces_by_owner_id_success_data(authorized_admin_client,
                                                      test_workspaces,
-                                                     test_users,
-                                                     test_user_workspaces):
-    response = authorized_admin_client.get(f"/api/workspaces/{test_users[0].id}")
+                                                     test_admin_user,
+                                                     test_admin_workspaces):
+    response = authorized_admin_client.get(f"/api/workspaces/{test_admin_user.id}")
     workspaces: List[WorkspaceOut] = response.json()
-    assert len(workspaces) == len(test_user_workspaces)
+    assert len(workspaces) == len(test_admin_workspaces)
 
 
 def test_get_all_workspaces_by_owner_id_not_found(authorized_admin_client, test_workspaces):
@@ -98,12 +98,12 @@ def test_get_all_workspaces_by_owner_id_not_found_error_message(authorized_admin
     assert error == f"User with id: 9999 not found"
 
 
-def test_get_all_workspaces_by_owner_id_unauthorized_user(client, test_workspaces, test_users):
-    response = client.get(f"/api/workspaces/{test_users[0].id}")
+def test_get_all_workspaces_by_owner_id_unauthorized_user(client, test_workspaces, test_simple_user):
+    response = client.get(f"/api/workspaces/{test_simple_user.id}")
     assert response.status_code == 401
 
 
-def test_get_all_workspaces_by_owner_id_unauthorized_user_error_message(client, test_workspaces, test_users):
-    response = client.get(f"/api/workspaces/{test_users[0].id}")
+def test_get_all_workspaces_by_owner_id_unauthorized_user_error_message(client, test_workspaces, test_simple_user):
+    response = client.get(f"/api/workspaces/{test_simple_user.id}")
     error = response.json().get("detail")
     assert error == "Not authenticated"

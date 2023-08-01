@@ -4,29 +4,29 @@ from api.config.env_config import settings as env
 from api.security.token_schemas import Token
 
 
-def test_login_user_as_admin_success(client, test_users, test_password):
-    response = client.post("/api/auth/login", data={"username": test_users[1].email, "password": test_password})
+def test_login_user_as_admin_success(client, test_admin_user, test_password):
+    response = client.post("/api/auth/login", data={"username": test_admin_user.email, "password": test_password})
     assert response.status_code == 200
 
 
-def test_login_user_as_user_success(client, test_users, test_password):
-    response = client.post("/api/auth/login", data={"username": test_users[0].email, "password": test_password})
+def test_login_user_as_user_success(client, test_simple_user, test_password):
+    response = client.post("/api/auth/login", data={"username": test_simple_user.email, "password": test_password})
     assert response.status_code == 200
 
 
-def test_login_as_admin_success_payload_token(client, test_users, test_password):
-    response = client.post("/api/auth/login", data={"username": test_users[1].email, "password": test_password})
+def test_login_as_admin_success_payload_token(client, test_admin_user, test_password):
+    response = client.post("/api/auth/login", data={"username": test_admin_user.email, "password": test_password})
     token: Token = Token(**response.json())
     payload = jwt.decode(token.access_token, env.token_secret_key, algorithms=[env.token_algorithm])
-    assert payload.get("email") == test_users[1].email
+    assert payload.get("email") == test_admin_user.email
     assert token.token_type == "Bearer"
 
 
-def test_login_as_user_success_payload_token(client, test_users, test_password):
-    response = client.post("/api/auth/login", data={"username": test_users[0].email, "password": test_password})
+def test_login_as_user_success_payload_token(client, test_simple_user, test_password):
+    response = client.post("/api/auth/login", data={"username": test_simple_user.email, "password": test_password})
     token: Token = Token(**response.json())
     payload = jwt.decode(token.access_token, env.token_secret_key, algorithms=[env.token_algorithm])
-    assert payload.get("email") == test_users[0].email
+    assert payload.get("email") == test_simple_user.email
     assert token.token_type == "Bearer"
 
 
@@ -41,13 +41,13 @@ def test_login_incorrect_email_error_message(client, test_users, test_password):
     assert error == "Invalid Credentials"
 
 
-def test_login_incorrect_password(client, test_users, test_password):
-    response = client.post("/api/auth/login", data={"username": test_users[1], "password": "incorrect1A#"})
+def test_login_incorrect_password(client, test_admin_user, test_password):
+    response = client.post("/api/auth/login", data={"username": test_admin_user, "password": "incorrect1A#"})
     assert response.status_code == 403
 
 
-def test_login_incorrect_password_error_message(client, test_users, test_password):
-    response = client.post("/api/auth/login", data={"username": test_users[1], "password": "incorrect1A#"})
+def test_login_incorrect_password_error_message(client, test_admin_user, test_password):
+    response = client.post("/api/auth/login", data={"username": test_admin_user, "password": "incorrect1A#"})
     error = response.json().get("detail")
     assert error == "Invalid Credentials"
 
@@ -75,8 +75,8 @@ def test_save_user_success_payload_token(client, test_roles, test_password):
     assert token.token_type == "Bearer"
 
 
-def test_save_user_already_exist(client, test_users, test_password):
-    data = {"email": test_users[0].email,
+def test_save_user_already_exist(client, test_simple_user, test_password):
+    data = {"email": test_simple_user.email,
             "first_name": "Firstname",
             "last_name": "Lastname",
             "password": test_password}
@@ -85,8 +85,8 @@ def test_save_user_already_exist(client, test_users, test_password):
     assert response.status_code == 409
 
 
-def test_save_user_already_exist_error_message(client, test_users, test_password):
-    data = {"email": test_users[0].email,
+def test_save_user_already_exist_error_message(client, test_simple_user, test_password):
+    data = {"email": test_simple_user.email,
             "first_name": "Firstname",
             "last_name": "Lastname",
             "password": test_password}

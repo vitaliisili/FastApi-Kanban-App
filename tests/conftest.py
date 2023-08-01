@@ -2,7 +2,7 @@ from typing import List, Type
 from fastapi.testclient import TestClient
 import pytest
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import sessionmaker
 from api.db.base import Base
 from api.main import app
 from api.db.database_config import get_db
@@ -30,7 +30,7 @@ def session() -> TestSessionLocal:
 
 
 @pytest.fixture
-def client(session: TestClient) -> TestClient:
+def client(session: TestSessionLocal) -> TestClient:
     def override_get_db():
         try:
             yield session
@@ -42,16 +42,13 @@ def client(session: TestClient) -> TestClient:
 
 
 @pytest.fixture
-def test_roles(client: TestClient, session: Session) -> List[Type[Role]]:
-    role_user = {"name": "USER"}
-    role_admin = {"name": "ADMIN"}
-    role_moderator = {"name": "MODERATOR"}
-    session.add_all(
-        [
-            Role(**role_user),
-            Role(**role_admin),
-            Role(**role_moderator)
-        ])
+def test_roles(client: TestClient, session: TestSessionLocal) -> List[Type[Role]]:
+    roles = [
+        Role(name="USER"),
+        Role(name="ADMIN"),
+        Role(name="MODERATOR"),
+    ]
+    session.add_all(roles)
     session.commit()
     return session.query(Role).all()
 
@@ -62,42 +59,47 @@ def test_password():
 
 
 @pytest.fixture(scope="session")
-def hashed_password(test_password):
+def hashed_password(test_password) -> str:
     hash_password = HashPassword()
     return hash_password.get_hashed_password(test_password)
 
 
 @pytest.fixture
-def test_users(client: TestClient, session: Session, test_roles: List[Role], hashed_password: str) -> List[Type[User]]:
-    user_user = {"email": "user@email.com",
-                 "password": hashed_password,
-                 "first_name": "user_first",
-                 "last_name": "user_last"}
+def test_users(client: TestClient,
+               session: TestSessionLocal,
+               test_roles: List[Role],
+               hashed_password: str) -> List[Type[User]]:
 
-    user_admin = {"email": "admin@email.com",
-                  "password": hashed_password,
-                  "first_name": "admin_first",
-                  "last_name": "admin_last"}
+    user: User = User(email="user@email.com",
+                      password=hashed_password,
+                      first_name="user_first",
+                      last_name="user_last",
+                      roles=[test_roles[0]])
 
-    session.add_all([User(**user_user), User(**user_admin)])
+    admin: User = User(email="admin@email.com",
+                       password=hashed_password,
+                       first_name="admin_first",
+                       last_name="admin_last",
+                       roles=test_roles)
+
+    session.add_all([user, admin])
     session.commit()
-
-    user = session.query(User).filter_by(id=1).first()
-    user.roles.append(session.query(Role).filter_by(name=test_roles[0].name).first())
-    session.commit()
-
-    admin = session.query(User).filter_by(id=2).first()
-    admin.roles.append(session.query(Role).filter_by(name=test_roles[0].name).first())
-    admin.roles.append(session.query(Role).filter_by(name=test_roles[1].name).first())
-    admin.roles.append(session.query(Role).filter_by(name=test_roles[2].name).first())
-    session.commit()
-
     return session.query(User).all()
 
 
 @pytest.fixture
-def authorized_admin_client(client: TestClient, test_users: List[User]) -> TestClient:
-    token: Token = create_access_token(data={"email": test_users[1].email})
+def test_admin_user(test_users) -> Type[User]:
+    return test_users[1]
+
+
+@pytest.fixture
+def test_simple_user(test_users) -> Type[User]:
+    return test_users[0]
+
+
+@pytest.fixture
+def authorized_admin_client(client: TestClient, test_admin_user: User) -> TestClient:
+    token: Token = create_access_token(data={"email": test_admin_user.email})
     client.headers = {
         **client.headers,
         "Authorization": f"Bearer {token.access_token}"
@@ -106,8 +108,8 @@ def authorized_admin_client(client: TestClient, test_users: List[User]) -> TestC
 
 
 @pytest.fixture
-def authorized_user_client(client: TestClient, test_users: List[User]) -> TestClient:
-    token: Token = create_access_token(data={"email": test_users[0].email})
+def authorized_user_client(client: TestClient, test_simple_user: User) -> TestClient:
+    token: Token = create_access_token(data={"email": test_simple_user.email})
     client.headers = {
         **client.headers,
         "Authorization": f"Bearer {token.access_token}"
@@ -116,11 +118,11 @@ def authorized_user_client(client: TestClient, test_users: List[User]) -> TestCl
 
 
 @pytest.fixture
-def test_workspaces(session, test_users) -> List[Type[Workspace]]:
-    workspaces = [
-        Workspace(title="Java Project Workspace", owner_id=test_users[1].id, members=test_users),
-        Workspace(title="Python Project Workspace", owner_id=test_users[1].id, members=[test_users[1]]),
-        Workspace(title="Ruby Project Workspace", owner_id=test_users[0].id, members=[test_users[0]]),
+def test_workspaces(session: TestSessionLocal, test_admin_user: User, test_simple_user: User) -> List[Type[Workspace]]:
+    workspaces: List[Workspace] = [
+        Workspace(title="C++ Workspace", owner_id=test_admin_user.id, members=[test_admin_user, test_simple_user]),
+        Workspace(title="Python Project Workspace", owner_id=test_admin_user.id, members=[test_admin_user]),
+        Workspace(title="Ruby Project Workspace", owner_id=test_simple_user.id, members=[test_simple_user]),
     ]
 
     session.add_all(workspaces)
@@ -129,13 +131,12 @@ def test_workspaces(session, test_users) -> List[Type[Workspace]]:
 
 
 @pytest.fixture
-def test_admin_workspaces(test_workspaces) -> List[Type[Workspace]]:
+def test_admin_workspaces(test_workspaces: List[Type[Workspace]]) -> List[Type[Workspace]]:
     admin_workspaces: List[Type[Workspace]] = [workspace for workspace in test_workspaces if workspace.owner_id == 2]
-    print(len(test_workspaces))
     return admin_workspaces
 
 
 @pytest.fixture
-def test_user_workspaces(test_workspaces) -> List[Type[Workspace]]:
+def test_user_workspaces(test_workspaces: List[Type[Workspace]]) -> List[Type[Workspace]]:
     user_workspaces: List[Type[Workspace]] = [workspace for workspace in test_workspaces if workspace.owner_id == 1]
     return user_workspaces
