@@ -36,13 +36,13 @@ def test_save_role_with_existing_name_error(authorized_admin_client, test_roles,
     assert error == f"Role with name {name} already exists"
 
 
-def test_save_role_unauthorized_user(client):
+def test_save_role_unauthenticated_user(client):
     role = {"name": "TEST"}
     response = client.post("/api/roles", json=role)
     assert response.status_code == 401
 
 
-def test_save_role_unauthorized_user_error_message(client):
+def test_save_role_unauthenticated_user_error_message(client):
     role = {"name": "TEST"}
     response = client.post("/api/roles", json=role)
     error = response.json().get("detail")
@@ -56,7 +56,7 @@ def test_get_all_roles(authorized_admin_client, test_roles):
     assert len(roles) == len(test_roles)
 
 
-def test_all_roles_unauthorized_user(client, test_roles):
+def test_all_roles_unauthenticated_user(client, test_roles):
     response = client.get("/api/roles")
     assert response.status_code == 401
 
@@ -72,7 +72,7 @@ def test_update_role_success(authorized_admin_client, test_roles):
     assert updated_role.name == test_roles[2].name
 
 
-def test_update_role_unauthorized_user(client, test_roles):
+def test_update_role_unauthenticated_user(client, test_roles):
     role = {
         "id": test_roles[2].id,
         "name": "MANAGER"
@@ -132,7 +132,7 @@ def test_delete_role_success(authorized_admin_client, test_roles):
     assert response.status_code == 204
 
 
-def test_delete_role_unauthorized_user(client, test_roles):
+def test_delete_role_unauthenticated_user(client, test_roles):
     response = client.delete(f"/api/roles/{test_roles[2].id}")
     assert response.status_code == 401
 

@@ -9,12 +9,12 @@ def test_get_all_user_success(authorized_admin_client, test_users):
     assert len(users) == len(test_users)
 
 
-def test_get_all_user_unauthorized_user(client, test_users):
+def test_get_all_user_unauthenticated_user(client, test_users):
     response = client.get("/api/users")
     assert response.status_code == 401
 
 
-def test_get_all_user_unauthorized_user_error_message(client, test_users):
+def test_get_all_user_unauthenticated_user_error_message(client, test_users):
     response = client.get("/api/users")
     error = response.json().get("detail")
     assert error == "Not authenticated"
@@ -27,7 +27,7 @@ def test_get_user_by_id_success(authorized_admin_client, test_simple_user):
     assert user.email == test_simple_user.email
 
 
-def test_get_user_by_id_unauthorized_user(client, test_simple_user):
+def test_get_user_by_id_unauthenticated_user(client, test_simple_user):
     response = client.get(f"/api/users/{test_simple_user.id}")
     assert response.status_code == 401
 
@@ -79,7 +79,7 @@ def test_update_user_success_update_email(authorized_admin_client, test_simple_u
     assert user.email == test_simple_user.email
 
 
-def test_update_user_unauthorized_user(client, test_simple_user):
+def test_update_user_unauthenticated_user(client, test_simple_user):
     data = {
         "id": test_simple_user.id,
         "email": "new_email@email.com",
@@ -236,7 +236,7 @@ def test_delete_user_success(authorized_admin_client, test_simple_user):
     assert response.status_code == 204
 
 
-def test_delete_user_unauthorized(client, test_simple_user):
+def test_delete_user_unauthenticated(client, test_simple_user):
     response = client.delete(f"/api/users/{test_simple_user.id}")
     assert response.status_code == 401
 
