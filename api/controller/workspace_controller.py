@@ -6,7 +6,7 @@ from api.exception.exception import EntityNotFoundException, EntityAlreadyExists
 from api.models.user_model import User
 from api.models.workspace_model import Workspace
 from api.schemas.workspace_schemas import WorkspaceOut, WorkspaceCreate
-from api.security.oauth2 import get_principal
+from api.security.jwt_config import get_principal
 from api.service.workspace_service import WorkspaceService
 
 router = APIRouter(tags=["Workspace"])

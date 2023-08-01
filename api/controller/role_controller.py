@@ -5,7 +5,7 @@ from api.db.database_config import get_db
 from api.exception.exception import EntityNotFoundException, EntityAlreadyExistsException, BadRequestException
 from api.models.user_model import User
 from api.schemas.role_schemas import RoleOut, RoleCreate, RoleUpdate
-from api.security.oauth2 import get_principal
+from api.security.jwt_config import get_principal
 from api.service.role_service import RoleService
 
 router = APIRouter(tags=['Roles'])
