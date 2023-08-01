@@ -9,7 +9,7 @@ from api.security.token_schemas import TokenData, Token
 from api.service.user_service import UserService
 from jose import jwt
 from jose.exceptions import JWTError
-from api.security.password import HashPassword
+from api.security.password_utils import HashPassword
 from api.config.env_config import settings as env
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
@@ -52,7 +52,7 @@ def authenticate_user(email: str, plain_password: str, db: Session) -> User:
     return user
 
 
-async def get_principal(token: Annotated[str, Depends(oauth2_scheme)], db: Annotated[Session, Depends(get_db)]) -> User:
+def get_principal(token: Annotated[str, Depends(oauth2_scheme)], db: Annotated[Session, Depends(get_db)]) -> User:
     credentials_exception: HTTPException = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                                                          detail="Could not validate credentials",
                                                          headers={"WWW-Authenticate": "Bearer"})

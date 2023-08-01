@@ -10,8 +10,8 @@ from api.models.role_model import Role
 from api.models.user_model import User
 from api.models.workspace_model import Workspace
 from api.security.token_schemas import Token
-from api.security.oauth2 import create_access_token
-from api.security.password import HashPassword
+from api.security.jwt_config import create_access_token
+from api.security.password_utils import HashPassword
 
 SQLALCHEMY_DB_URL = "sqlite:///tests/test.db"
 engine = create_engine(SQLALCHEMY_DB_URL, connect_args={"check_same_thread": False})

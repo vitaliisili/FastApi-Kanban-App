@@ -5,7 +5,7 @@ from api.models.role_model import Role
 from api.models.user_model import User
 from api.repository.user_repository import UserRepository
 from api.schemas.user_schemas import UserCreate, UserUpdate
-from api.security.password import HashPassword
+from api.security.password_utils import HashPassword
 from api.service.role_service import RoleService
 
 

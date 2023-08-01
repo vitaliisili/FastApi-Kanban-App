@@ -8,4 +8,4 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    email: Optional[EmailStr]
+    email: EmailStr

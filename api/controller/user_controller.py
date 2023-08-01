@@ -5,7 +5,7 @@ from api.db.database_config import get_db
 from api.exception.exception import BadRequestException, EntityNotFoundException, EntityAlreadyExistsException
 from api.models.user_model import User
 from api.schemas.user_schemas import UserCreate, UserOut, UserUpdate
-from api.security.oauth2 import get_principal
+from api.security.jwt_config import get_principal
 from api.service.user_service import UserService
 
 router = APIRouter(tags=['Users'])
