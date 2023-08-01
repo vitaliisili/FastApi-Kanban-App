@@ -1,3 +1,4 @@
+from typing import List
 import pytest
 from api.schemas.workspace_schemas import WorkspaceOut
 
@@ -68,5 +69,41 @@ def test_get_all_unidentified_user(client, test_workspaces):
 
 def test_get_all_unidentified_user_error_message(client, test_workspaces):
     response = client.get("/api/workspaces")
+    error = response.json().get("detail")
+    assert error == "Not authenticated"
+
+
+def test_get_all_workspaces_by_owner_id_success(authorized_admin_client, test_workspaces, test_users):
+    response = authorized_admin_client.get(f"/api/workspaces/{test_users[0].id}")
+    assert response.status_code == 200
+
+
+def test_get_all_workspaces_by_owner_id_success_data(authorized_admin_client,
+                                                     test_workspaces,
+                                                     test_users,
+                                                     test_user_workspaces):
+    response = authorized_admin_client.get(f"/api/workspaces/{test_users[0].id}")
+    workspaces: List[WorkspaceOut] = response.json()
+    assert len(workspaces) == len(test_user_workspaces)
+
+
+def test_get_all_workspaces_by_owner_id_not_found(authorized_admin_client, test_workspaces):
+    response = authorized_admin_client.get("/api/workspaces/9999")
+    assert response.status_code == 404
+
+
+def test_get_all_workspaces_by_owner_id_not_found_error_message(authorized_admin_client, test_workspaces):
+    response = authorized_admin_client.get("/api/workspaces/9999")
+    error = response.json().get("detail")
+    assert error == f"User with id: 9999 not found"
+
+
+def test_get_all_workspaces_by_owner_id_unauthorized_user(client, test_workspaces, test_users):
+    response = client.get(f"/api/workspaces/{test_users[0].id}")
+    assert response.status_code == 401
+
+
+def test_get_all_workspaces_by_owner_id_unauthorized_user_error_message(client, test_workspaces, test_users):
+    response = client.get(f"/api/workspaces/{test_users[0].id}")
     error = response.json().get("detail")
     assert error == "Not authenticated"
