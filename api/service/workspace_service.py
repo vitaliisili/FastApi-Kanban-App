@@ -1,6 +1,6 @@
 from typing import List, Type
 from sqlalchemy.orm import Session
-from api.exception.exception import EntityAlreadyExistsException
+from api.exception.exception import EntityAlreadyExistsException, EntityNotFoundException
 from api.models.user_model import User
 from api.models.workspace_model import Workspace
 from api.repository.workspace_repository import WorkspaceRepository
@@ -15,7 +15,6 @@ class WorkspaceService:
 
     def save_workspace(self, workspace_create: WorkspaceCreate, db: Session, principal: User) -> Workspace:
         workspaces: List[Workspace] = self.workspace_repository.get_all_by_owner_id(principal.id, db)
-
         if workspace_create.title in [workspace.title for workspace in workspaces]:
             raise EntityAlreadyExistsException(f"Workspace with title: {workspace_create.title} already exists")
 
@@ -27,4 +26,12 @@ class WorkspaceService:
 
     def get_all_workspaces(self, db: Session) -> list[Type[Workspace]]:
         workspaces: List[Type[Workspace]] = self.workspace_repository.get_all(db)
+        return workspaces
+
+    def get_all_workspaces_by_owner_id(self, owner_id, db: Session) -> List[Workspace]:
+        owner_check: Type[User] = self.user_service.get_user_by_id(owner_id, db)
+        if not owner_check:
+            raise EntityNotFoundException(f"User with owner_id: {owner_id} not found")
+
+        workspaces: List[Workspace] = self.workspace_repository.get_all_by_owner_id(owner_id, db)
         return workspaces
