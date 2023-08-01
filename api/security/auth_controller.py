@@ -7,7 +7,7 @@ from api.exception.exception import EntityAlreadyExistsException, BadRequestExce
 from api.models.user_model import User
 from api.schemas.user_schemas import UserCreate
 from api.security.token_schemas import Token
-from api.security.oauth2 import authenticate_user, create_access_token
+from api.security.jwt_config import authenticate_user, create_access_token
 from api.service.user_service import UserService
 
 router = APIRouter(tags=["Authentication"])
