@@ -21,9 +21,6 @@ class WorkspaceCreate(WorkspaceBase):
 class WorkspaceUpdate(WorkspaceBase):
     id: int
     members: List[UserUpdate]
-    owner_id: int = Field(None, description="Workspace owner")
-    created_at: Optional[datetime]
-    updated_at: Optional[datetime]
 
 
 class WorkspaceOut(WorkspaceBase):
