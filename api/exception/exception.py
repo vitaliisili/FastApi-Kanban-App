@@ -39,3 +39,16 @@ class EntityAlreadyExistsException(Exception):
     address already exists, you can raise this exception to indicate the duplication.
     """
     pass
+
+
+class PermissionDeniedException(Exception):
+    """
+    Description:
+    This exception indicates that the user does not have sufficient privileges to access the requested resource.
+
+    Usage:
+    The `PermissionDeniedException` can be used in scenarios where you need to handle permission errors.
+    For example, if a user tries to access a resource that requires elevated privileges or permissions, you can
+    raise this exception to indicate the permission error.
+    """
+    pass
