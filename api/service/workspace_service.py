@@ -53,3 +53,13 @@ class WorkspaceService:
         updated_workspace = self.workspace_repository.update(workspace, db)
         return updated_workspace
 
+    def delete_workspace_by_id(self, id: int, db: Session, principal: User):
+        check_workspace = self.workspace_repository.get_by_id(id, db)
+
+        if check_workspace is None:
+            raise EntityNotFoundException(f"Workspace with id: {id} not found")
+
+        if check_workspace.owner_id != principal.id and "ADMIN" not in [role.name for role in principal.roles]:
+            raise PermissionDeniedException("Access denied: not enough privileges")
+
+        self.workspace_repository.delete(id, db)
