@@ -269,3 +269,35 @@ def test_update_not_owned_workspace_with_admin_role(authorized_admin_client, tes
     }
     response = authorized_admin_client.put("/api/workspaces", json=data)
     assert response.status_code == 200
+
+
+def test_delete_workspace_by_id_success(authorized_admin_client, test_admin_workspaces):
+    response = authorized_admin_client.delete(f"/api/workspaces/{test_admin_workspaces[0].id}")
+    assert response.status_code == 204
+
+
+def test_delete_workspace_by_id_not_found(authorized_admin_client):
+    resource = authorized_admin_client.delete("/api/workspaces/9999")
+    assert resource.status_code == 404
+
+
+def test_delete_workspace_by_id_not_found_error_message(authorized_admin_client):
+    resource = authorized_admin_client.delete("/api/workspaces/9999")
+    error = resource.json().get("detail")
+    assert error == "Workspace with id: 9999 not found"
+
+
+def test_delete_workspace_by_id_not_owned_with_admin_role(authorized_admin_client, test_user_workspaces):
+    response = authorized_admin_client.delete(f"/api/workspaces/{test_user_workspaces[0].id}")
+    assert response.status_code == 204
+
+
+def test_delete_workspace_by_id_not_owned_with_user_role(authorized_user_client, test_admin_workspaces):
+    response = authorized_user_client.delete(f"/api/workspaces/{test_admin_workspaces[0].id}")
+    assert response.status_code == 403
+
+
+def test_delete_workspace_by_id_not_owned_with_user_role_error_message(authorized_user_client, test_admin_workspaces):
+    response = authorized_user_client.delete(f"/api/workspaces/{test_admin_workspaces[0].id}")
+    error = response.json().get("detail")
+    assert error == "Access denied: not enough privileges"
