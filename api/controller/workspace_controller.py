@@ -70,3 +70,13 @@ def update_workspace(workspace: WorkspaceUpdate,
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(err))
     except PermissionDeniedException as err:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(err))
+
+
+@router.delete("/api/workspaces/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_workspace_by_id(id: int, db: Session = Depends(get_db), principal: User = Depends(get_principal)):
+    try:
+        workspace_service.delete_workspace_by_id(id, db, principal)
+    except EntityNotFoundException as err:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(err))
+    except PermissionDeniedException as err:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(err))
