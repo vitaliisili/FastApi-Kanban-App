@@ -140,3 +140,132 @@ def test_get_workspace_by_id_unauthenticated_user_error_message(client, test_wor
     response = client.get(f"/api/workspaces/{test_workspaces[0].id}")
     error = response.json().get("detail")
     assert error == "Not authenticated"
+
+
+def test_update_workspace_success(authorized_admin_client, test_workspaces, test_admin_user, ):
+    data = {
+        "id": test_workspaces[0].id,
+        "title": "New Title",
+        "members": [
+            {
+                "email": test_admin_user.email,
+                "first_name": test_admin_user.first_name,
+                "last_name": test_admin_user.last_name,
+                "id": test_admin_user.id,
+                "roles": []
+            }
+        ]
+    }
+    response = authorized_admin_client.put("/api/workspaces", json=data)
+    assert response.status_code == 200
+
+
+def test_update_workspace_success_data(authorized_admin_client, test_workspaces, test_admin_user):
+    data = {
+        "id": test_workspaces[0].id,
+        "title": "New Title",
+        "members": [
+            {
+                "email": test_admin_user.email,
+                "first_name": test_admin_user.first_name,
+                "last_name": test_admin_user.last_name,
+                "id": test_admin_user.id,
+                "roles": []
+            }
+        ]
+    }
+    response = authorized_admin_client.put("/api/workspaces", json=data)
+    workspace = WorkspaceOut(**response.json())
+    assert workspace.title == data.get("title")
+    assert len(workspace.members) == len(data.get("members"))
+
+
+def test_update_workspace_unauthenticated_user(client, test_workspaces, test_admin_user):
+    data = {
+        "id": test_workspaces[0].id,
+        "title": "New Title",
+        "members": [
+            {
+                "email": test_admin_user.email,
+                "first_name": test_admin_user.first_name,
+                "last_name": test_admin_user.last_name,
+                "id": test_admin_user.id,
+                "roles": []
+            }
+        ]
+    }
+    response = client.put("/api/workspaces", json=data)
+    assert response.status_code == 401
+
+
+def test_update_workspace_not_found(authorized_admin_client, test_admin_user):
+    data = {
+        "id": 9999,
+        "title": "New Title",
+        "members": [
+            {
+                "email": test_admin_user.email,
+                "first_name": test_admin_user.first_name,
+                "last_name": test_admin_user.last_name,
+                "id": test_admin_user.id,
+                "roles": []
+            }
+        ]
+    }
+    response = authorized_admin_client.put("/api/workspaces", json=data)
+    assert response.status_code == 404
+
+
+def test_update_workspace_not_found_error_message(authorized_admin_client, test_admin_user):
+    data = {
+        "id": 9999,
+        "title": "New Title",
+        "members": [
+            {
+                "email": test_admin_user.email,
+                "first_name": test_admin_user.first_name,
+                "last_name": test_admin_user.last_name,
+                "id": test_admin_user.id,
+                "roles": []
+            }
+        ]
+    }
+    response = authorized_admin_client.put("/api/workspaces", json=data)
+    error = response.json().get("detail")
+    assert error == "Workspace with id: 9999 not found"
+
+
+def test_update_workspace_not_owner(authorized_user_client, test_workspaces, test_admin_user):
+    data = {
+        "id": test_workspaces[0].id,
+        "title": "New Title",
+        "members": [
+            {
+                "email": test_admin_user.email,
+                "first_name": test_admin_user.first_name,
+                "last_name": test_admin_user.last_name,
+                "id": test_admin_user.id,
+                "roles": []
+            }
+        ]
+    }
+    response = authorized_user_client.put("/api/workspaces", json=data)
+    assert response.status_code == 403
+
+
+def test_update_not_owned_workspace_with_admin_role(authorized_admin_client, test_user_workspaces, test_simple_user):
+    data = {
+        "id": test_user_workspaces[0].id,
+        "title": "New Title",
+        "members": [
+            {
+                "email": test_simple_user.email,
+                "first_name": test_simple_user.first_name,
+                "last_name": test_simple_user.last_name,
+                "id": test_simple_user.id,
+                "roles": []
+            }
+        ]
+    }
+    response = authorized_admin_client.put("/api/workspaces", json=data)
+    assert response.status_code == 200
