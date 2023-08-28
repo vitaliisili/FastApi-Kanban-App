@@ -24,6 +24,7 @@ class ReadWriteRepository(Generic[T]):
 
         This method adds the given entity to the current session and commits the transaction to persist it
         into the database.
+
         Parameters:
             entity (T): The entity object to be saved to the database.
             db (Session): The SQLAlchemy session object to use for the database transaction.
